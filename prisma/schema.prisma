@@ -1,0 +1,126 @@
+// BridgePath — database schema (PostgreSQL)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum EnquiryStatus {
+  NEW
+  CONTACTED
+  IN_PROGRESS
+  CLIENT
+  CLOSED
+  SPAM
+}
+
+model Enquiry {
+  id             String        @id @default(cuid())
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  status         EnquiryStatus @default(NEW)
+
+  // 01 About you
+  fullName       String
+  role           String // student | parent
+  email          String
+  phone          String
+  whatsapp       String?
+  telegram       String?
+
+  // 02 Your plans
+  level          String // bachelor | master | phd
+  startYear      String // 2026 | 2027 | 2028 | 2029 | later
+  universities   String?
+  countries      String[] // country keys, see src/lib/enquiry-options.ts
+  service        String // profile-evaluation | full-admission-consulting | not-sure
+
+  // 03 Message
+  message        String?
+
+  // Context
+  lang           String // hy | ru | en
+  page           String? // page the form was submitted from
+  referrer       String?
+  serviceParam   String? // ?service= value on arrival
+  consentVersion String
+  consentAt      DateTime
+  ipHash         String?
+  userAgent      String?
+
+  notes          EnquiryNote[]
+
+  @@index([status, createdAt])
+  @@index([createdAt])
+  @@index([ipHash, createdAt])
+}
+
+model EnquiryNote {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  enquiryId String
+  enquiry   Enquiry  @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+  author    String
+  body      String
+}
+
+/// Single-row table (id = 1) with the figures shown on Home and Results.
+model SiteStats {
+  id                 Int      @id @default(1)
+  updatedAt          DateTime @updatedAt
+  admittedCount      Int      @default(18)
+  totalCount         Int      @default(20)
+  graduateAdmissions Int      @default(3)
+  fundingMinPct      Int      @default(25)
+  fundingMaxPct      Int      @default(100)
+  // Short paragraph under the dot graphic on Results
+  practiceNoteHy     String
+  practiceNoteRu     String
+  practiceNoteEn     String
+  // Italic caveat under the funding scale on Results
+  fundingCaveatHy    String
+  fundingCaveatRu    String
+  fundingCaveatEn    String
+}
+
+model University {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  name       String // shown as plain text, never a logo
+  countryHy  String
+  countryRu  String
+  countryEn  String
+  sortOrder  Int      @default(0)
+  visible    Boolean  @default(true)
+  showOnHome Boolean  @default(true)
+}
+
+model Testimonial {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  quoteHy    String
+  quoteRu    String
+  quoteEn    String
+  authorHy   String
+  authorRu   String
+  authorEn   String
+  university String
+  level      String // bachelor | master | phd
+  featured   Boolean  @default(false) // shown on Home + navy card on Results
+  visible    Boolean  @default(true)
+  sortOrder  Int      @default(0)
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  createdAt    DateTime  @default(now())
+  email        String    @unique
+  name         String
+  passwordHash String
+  lastLoginAt  DateTime?
+}
