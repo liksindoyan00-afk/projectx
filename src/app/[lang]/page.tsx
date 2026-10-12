@@ -57,7 +57,7 @@ export default async function Home({ params }: Params) {
           </div>
           <div style={{ position: 'relative', justifySelf: 'end', width: '100%', maxWidth: 540 }}>
             <div className="photo-frame__rule" style={{ inset: '24px -24px -24px 24px' }} />
-            <Photo ratio="4/5" alt={h.heroImageAlt} note="Campus or library photograph — vertical, quiet, natural light" />
+            <Photo src="/images/home-hero" priority ratio="4/5" alt={h.heroImageAlt} note="Campus or library photograph — vertical, quiet, natural light" />
             <svg
               viewBox="0 0 1000 1000"
               style={{ position: 'absolute', left: '-58%', top: '-14%', width: '170%', height: '128%', maxWidth: 'none', pointerEvents: 'none', overflow: 'visible' }}

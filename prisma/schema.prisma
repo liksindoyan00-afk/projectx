@@ -124,3 +124,17 @@ model AdminUser {
   passwordHash String
   lastLoginAt  DateTime?
 }
+
+/// Single-row table (id = 1): contact details shown in the footer, on Contact and in emails.
+/// An empty field hides that link on the site.
+model ContactSettings {
+  id        Int      @id @default(1)
+  updatedAt DateTime @updatedAt
+  email     String   @default("")
+  phone     String   @default("")
+  telegram  String   @default("") // @username or t.me link
+  whatsapp  String   @default("") // number with country code
+  instagram String   @default("") // @handle or profile URL
+  linkedin  String   @default("") // profile / company URL
+  replyDays String   @default("2") // "We reply within N working days"
+}

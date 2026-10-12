@@ -31,6 +31,7 @@ npm run dev                      # http://localhost:3000  ·  admin: http://loca
 | Statistics | “18 of 20” headline + dot graphic, graduate admissions count, funding range (25%–100%), the note and caveat text in HY/RU/EN. Live preview |
 | Universities | “Where they went” on Results and the list on Home (per-item “On Home”), country in 3 languages, order, hide/show |
 | Testimonials | Quote and first name in 3 languages, university, level, featured (Home quote + navy card), visible, order |
+| Contact details | Email, phone, WhatsApp, Telegram, Instagram, LinkedIn and reply time for the footer, Contact page, WhatsApp buttons and emails; empty = hidden |
 | Account & team | Add/remove people with access, change password |
 
 Saving statistics, universities or testimonials refreshes the public pages immediately (tagged cache revalidation).
@@ -48,7 +49,7 @@ Enquiry statuses: New → Contacted → In progress → Became client / Closed, 
 ## Content & placeholders
 
 - All page copy: `src/content/hy.ts`, `ru.ts`, `en.ts` (one typed object per language). Process, Results, About, FAQ, Privacy and 404 in HY/RU are first translations — **send for native review before launch**.
-- Contact details (`[email]`, `[Telegram]`, `[WhatsApp]`, phone, socials, `[X]` reply days): `src/content/site.ts`.
+- Contact details (email, phone, WhatsApp, Telegram, Instagram, LinkedIn, reply days) are edited in the admin under **Contact details**; `src/content/site.ts` only holds the placeholders shown until they are saved.
 - Privacy policy is the handoff template — final wording must come from the client’s legal adviser.
 - Photos: three slots (Home hero 4:5, About wide 21:8, About principles 4:5) render a placeholder. Pass `src` to the `<Photo>` component in `src/app/[lang]/page.tsx` and `about/page.tsx` once licensed images are available.
 - Design tokens: `src/app/globals.css` (`:root`), matching `tokens.json`. Fonts are self-hosted via `next/font` (Lora, Lato, Noto Sans, Noto Sans/Serif Armenian, JetBrains Mono).

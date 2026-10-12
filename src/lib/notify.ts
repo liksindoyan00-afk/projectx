@@ -2,6 +2,7 @@ import 'server-only';
 import type { Enquiry } from '@prisma/client';
 import { fmt, getDict } from '@/content';
 import { SITE } from '@/content/site';
+import { getContact } from './contact';
 import { COUNTRIES, LEVELS, ROLES, SERVICES, YEARS, labelFor } from './enquiry-options';
 import { isLang, type Lang } from './i18n';
 
@@ -75,10 +76,11 @@ export async function notifyNewEnquiry(e: Enquiry) {
   );
 
   if (process.env.SEND_AUTOREPLY !== 'false') {
+    const { replyDays } = await getContact();
     const lang: Lang = isLang(e.lang) ? e.lang : 'hy';
     const a = getDict(lang).autoreply;
     const html = `<div style="font:15px/1.6 Arial,sans-serif;color:#3B4656;max-width:600px">
-<p>${esc(fmt(a.greeting, { name: e.fullName }))}</p><p>${esc(fmt(a.body, { days: SITE.replyDays }))}</p>${table(enquiryRows(e, lang))}
+<p>${esc(fmt(a.greeting, { name: e.fullName }))}</p><p>${esc(fmt(a.body, { days: replyDays }))}</p>${table(enquiryRows(e, lang))}
 <p style="color:#86672F;margin-top:24px">${esc(a.signoff)}</p></div>`;
     jobs.push(sendEmail(e.email, a.subject, html, team || undefined));
   }

@@ -1,4 +1,4 @@
-import { SITE } from '@/content/site';
+import { getContact } from '@/lib/contact';
 import type { Dict } from '@/content';
 import { localePath, PAGES, type Lang } from '@/lib/i18n';
 import { ChatIcon, InstagramIcon, MailIcon, StarRule, TelegramIcon } from './icons';
@@ -6,8 +6,9 @@ import FloatingContact from './FloatingContact';
 
 const NAV_KEYS = ['services', 'process', 'results', 'about', 'faq', 'contact'] as const;
 
-export default function SiteFooter({ lang, t, hideBar }: { lang: Lang; t: Dict; hideBar?: boolean }) {
+export default async function SiteFooter({ lang, t, hideBar }: { lang: Lang; t: Dict; hideBar?: boolean }) {
   const enquireHref = localePath(lang, PAGES.contact) + '#enquiry';
+  const c = await getContact();
   return (
     <footer className="site-footer on-navy">
       <svg className="arc" viewBox="0 0 1200 520" preserveAspectRatio="xMinYMax slice" aria-hidden="true">
@@ -32,28 +33,40 @@ export default function SiteFooter({ lang, t, hideBar }: { lang: Lang; t: Dict; 
         <div className="footer-col">
           <span className="eyebrow">{t.footer.contact}</span>
           <div className="footer-contacts">
-            <a href={SITE.emailHref}>
-              <MailIcon />
-              {SITE.email}
-            </a>
-            <a href={SITE.telegramHref} target="_blank" rel="noopener">
-              <TelegramIcon />
-              {SITE.telegram}
-            </a>
-            <a href={SITE.whatsappHref} target="_blank" rel="noopener">
-              <ChatIcon />
-              {SITE.whatsapp}
-            </a>
+            {c.email && (
+              <a href={c.email.href}>
+                <MailIcon />
+                {c.email.label}
+              </a>
+            )}
+            {c.telegram && (
+              <a href={c.telegram.href} target="_blank" rel="noopener">
+                <TelegramIcon />
+                {c.telegram.label}
+              </a>
+            )}
+            {c.whatsapp && (
+              <a href={c.whatsapp.href} target="_blank" rel="noopener">
+                <ChatIcon />
+                {c.whatsapp.label}
+              </a>
+            )}
           </div>
           <span className="footer-where">{t.footer.where}</span>
-          <div className="socials">
-            <a href={SITE.instagramHref} target="_blank" rel="noopener" aria-label="Instagram">
-              <InstagramIcon color="#E6E1D6" />
-            </a>
-            <a href={SITE.linkedinHref} target="_blank" rel="noopener" aria-label="LinkedIn">
-              in
-            </a>
-          </div>
+          {(c.instagram || c.linkedin) && (
+            <div className="socials">
+              {c.instagram && (
+                <a href={c.instagram.href} target="_blank" rel="noopener" aria-label="Instagram">
+                  <InstagramIcon color="#E6E1D6" />
+                </a>
+              )}
+              {c.linkedin && (
+                <a href={c.linkedin.href} target="_blank" rel="noopener" aria-label="LinkedIn">
+                  in
+                </a>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <div className="site-footer__bottom">
@@ -63,7 +76,7 @@ export default function SiteFooter({ lang, t, hideBar }: { lang: Lang; t: Dict; 
           <a href={localePath(lang, PAGES.privacy)}>{t.footer.privacy}</a>
         </div>
       </div>
-      <FloatingContact waHref={SITE.whatsappHref} waLabel={t.footer.wa} enquireHref={enquireHref} enquireLabel={t.footer.enquire} hideBar={hideBar} />
+      <FloatingContact waHref={c.whatsappHref} waLabel={t.footer.wa} enquireHref={enquireHref} enquireLabel={t.footer.enquire} hideBar={hideBar} />
     </footer>
   );
 }

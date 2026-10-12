@@ -74,7 +74,7 @@ const en = {
     lead: 'Full-service admissions advisory — from the first honest assessment to the letter that says yes.',
     primary: 'Request an assessment',
     secondary: 'How we work',
-    heroImageAlt: 'A quiet university library in natural light',
+    heroImageAlt: 'Students reading between library shelves beside a tall, sunlit window',
     hard: {
       eyebrow: 'Why this is hard',
       title: 'Admissions abroad leave little room for error',

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { fmt, getDict } from '@/content';
-import { SITE } from '@/content/site';
+import { getContact } from '@/lib/contact';
 import { localePath, PAGES, type Lang } from '@/lib/i18n';
 import { pageMetadata } from '@/lib/seo';
 import PageShell from '@/components/page-shell';
@@ -17,7 +17,8 @@ export default async function Contact({ params }: Params) {
   const { lang } = await params;
   const t = getDict(lang);
   const c = t.contact;
-  const reply = fmt(c.reply, { days: SITE.replyDays });
+  const info = await getContact();
+  const reply = fmt(c.reply, { days: info.replyDays });
   return (
     <PageShell lang={lang} t={t} page="contact" solidHeader hideBar>
       <section id="enquiry" className="bg-ivory" style={{ overflow: 'hidden', scrollMarginTop: 0 }}>
@@ -40,49 +41,61 @@ export default async function Contact({ params }: Params) {
             <EnquiryForm
               lang={lang}
               f={t.form}
-              replyDays={SITE.replyDays}
+              replyDays={info.replyDays}
               replyNote={reply}
-              whatsappHref={SITE.whatsappHref}
+              whatsappHref={info.whatsappHref}
               privacyHref={localePath(lang, PAGES.privacy)}
             />
           </div>
 
           <div className="contact-list">
-            <a href={SITE.emailHref}>
-              <MailIcon />
-              <span className="k">{c.labels.email}</span>
-              {SITE.email}
-            </a>
-            <a href={SITE.phoneHref}>
-              <PhoneIcon />
-              <span className="k">{c.labels.mobile}</span>
-              <span>
-                {SITE.phone}
-                <span className="sub">{c.calls}</span>
-              </span>
-            </a>
-            <a href={SITE.telegramHref} target="_blank" rel="noopener">
-              <TelegramIcon />
-              <span className="k">{c.labels.telegram}</span>
-              {SITE.telegram}
-            </a>
-            <a href={SITE.whatsappHref} target="_blank" rel="noopener">
-              <ChatIcon />
-              <span className="k">{c.labels.whatsapp}</span>
-              {SITE.whatsapp}
-            </a>
-            <a href={SITE.instagramHref} target="_blank" rel="noopener">
-              <InstagramIcon />
-              <span className="k">{c.labels.instagram}</span>
-              {SITE.instagram}
-            </a>
-            <a href={SITE.linkedinHref} target="_blank" rel="noopener">
-              <span className="li-box" aria-hidden="true">
-                in
-              </span>
-              <span className="k">{c.labels.linkedin}</span>
-              {SITE.linkedin}
-            </a>
+            {info.email && (
+              <a href={info.email.href}>
+                <MailIcon />
+                <span className="k">{c.labels.email}</span>
+                {info.email.label}
+              </a>
+            )}
+            {info.phone && (
+              <a href={info.phone.href}>
+                <PhoneIcon />
+                <span className="k">{c.labels.mobile}</span>
+                <span>
+                  {info.phone.label}
+                  <span className="sub">{c.calls}</span>
+                </span>
+              </a>
+            )}
+            {info.telegram && (
+              <a href={info.telegram.href} target="_blank" rel="noopener">
+                <TelegramIcon />
+                <span className="k">{c.labels.telegram}</span>
+                {info.telegram.label}
+              </a>
+            )}
+            {info.whatsapp && (
+              <a href={info.whatsapp.href} target="_blank" rel="noopener">
+                <ChatIcon />
+                <span className="k">{c.labels.whatsapp}</span>
+                {info.whatsapp.label}
+              </a>
+            )}
+            {info.instagram && (
+              <a href={info.instagram.href} target="_blank" rel="noopener">
+                <InstagramIcon />
+                <span className="k">{c.labels.instagram}</span>
+                {info.instagram.label}
+              </a>
+            )}
+            {info.linkedin && (
+              <a href={info.linkedin.href} target="_blank" rel="noopener">
+                <span className="li-box" aria-hidden="true">
+                  in
+                </span>
+                <span className="k">{c.labels.linkedin}</span>
+                {info.linkedin.label}
+              </a>
+            )}
           </div>
 
           <div className="contact-visit">

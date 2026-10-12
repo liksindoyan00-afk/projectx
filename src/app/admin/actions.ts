@@ -232,3 +232,27 @@ export async function removeAdmin(fd: FormData) {
   await prisma.adminUser.delete({ where: { id } });
   revalidatePath('/admin/account');
 }
+
+// ─── Contact details ───────────────────────────────────────────────────
+
+export async function saveContact(_: FormState, fd: FormData): Promise<FormState> {
+  await requireAdmin();
+  const data = {
+    email: str(fd, 'email', 254),
+    phone: str(fd, 'phone', 40),
+    telegram: str(fd, 'telegram', 120),
+    whatsapp: str(fd, 'whatsapp', 40),
+    instagram: str(fd, 'instagram', 200),
+    linkedin: str(fd, 'linkedin', 300),
+    replyDays: str(fd, 'replyDays', 20),
+  };
+  if (data.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email)) return { error: 'The email address does not look complete.' };
+  const digits = (s: string) => s.replace(/\D/g, '').length;
+  if (data.phone && digits(data.phone) < 7) return { error: 'Enter the phone number with country code, e.g. +374 91 123456.' };
+  if (data.whatsapp && digits(data.whatsapp) < 7) return { error: 'Enter the WhatsApp number with country code, e.g. +374 91 123456.' };
+  if (!data.replyDays) return { error: 'Fill in the reply time (e.g. 2 or 1–2).' };
+  await prisma.contactSettings.upsert({ where: { id: 1 }, create: { id: 1, ...data }, update: data });
+  refreshPublicSite();
+  revalidatePath('/admin/contact');
+  return { ok: true, message: 'Saved. The footer and Contact page are updated.' };
+}
